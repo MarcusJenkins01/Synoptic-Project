@@ -1,0 +1,6 @@
+1. Download Github from
+https://desktop.github.com/
+
+2. Run the installer
+
+3. Login or register an account with Github
