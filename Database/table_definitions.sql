@@ -6,7 +6,7 @@ CREATE TABLE lender (
 	lender_id SERIAL PRIMARY KEY,
 	first_name TEXT NOT NULL,
 	surname TEXT NOT NULL,
-	photo_url TEXT DEFAULT 'https://cdn.discordapp.com/attachments/337688298078208001/847389356343427082/unknown.png',  -- Custom logo
+	photo_url TEXT DEFAULT 'https://cdn.discordapp.com/attachments/337688298078208001/847389356343427082/unknown.png',  -- Custom icon
 	contact_number PHONE_NUMBER
 );
 
