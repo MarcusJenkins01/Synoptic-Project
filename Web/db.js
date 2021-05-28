@@ -1,3 +1,4 @@
+// Using PostgreSQL
 const {Client} = require('pg');
 
 const db_details = {
@@ -8,9 +9,9 @@ const db_details = {
     port: '5432'
 };
 
-const db_client = new Client(db_details);
+client = new Client(db_details);
 
-db_client.connect((err) => {
+client.connect((err) => {
     if (err) {
         console.error(err)
     } else {
@@ -18,10 +19,5 @@ db_client.connect((err) => {
     }
 });
 
-db_client.query('SELECT * FROM lender;', (err, res) => {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log(res.rows[0]);
-    }
-});
+// Assign for export
+exports.client = client;
