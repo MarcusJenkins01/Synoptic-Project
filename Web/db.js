@@ -4,7 +4,7 @@ const {Client} = require('pg');
 const db_details = {
     user: 'group32',
     host: 'localhost',
-    database: 'synoptic_project',
+    database: 'bike_system',
     password: 'bingus2000',
     port: '5432'
 };

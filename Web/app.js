@@ -16,18 +16,20 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => {
     // A test to check our correspondance with PostgreSQL works
-    db.client.query('SELECT * FROM lender;')
-        .then((db_res) => {
-            res.render('lender_table.pug', {
-                lenders: db_res.rows
-            });
+    // db.client.query('SELECT * FROM lender;')
+    //     .then((db_res) => {
+    //         res.render('lender_table.pug', {
+    //             lenders: db_res.rows
+    //         });
 
-            console.log(db_res.rows);
-        })
-        .catch((db_err) => {
-            res.send('<h2>Database error, please try again later.<h2>');
-            console.log(db_err);
-        });
+    //         console.log(db_res.rows);
+    //     })
+    //     .catch((db_err) => {
+    //         res.send('<h2>Database error, please try again later.<h2>');
+    //         console.log(db_err);
+    //     });
+
+    res.render('index.pug', {});
 });
 
 // Set up a listen server using Express

@@ -1,0 +1,102 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    background-image: url('../img/bg/bg_04.jpg');
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    height: 100%;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    overflow: hidden;
+    color: rgb(255, 255, 255);
+}
+
+#contact-banner {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 5vw;
+    font-size: 0.9em;
+    font-weight: lighter;
+}
+
+#contact-banner i {
+    margin-right: 0.6em;
+}
+
+.dark-overlay {
+    background-color: rgba(0, 0, 0, 0.09);
+    width: 100%;
+    height: 100%;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5rem 5vw;
+}
+
+ul {
+    margin: 0;
+    list-style: none;
+
+    margin-block-start: 0;
+    margin-block-end: 0;
+    padding-inline-start: 0;
+}
+
+ul li {
+    display: inline-block;
+    margin-left: 2em;
+}
+
+ul li:first-of-type {
+    margin: 0;
+}
+
+ul li a {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    font-size: 1.1em;
+}
+
+ul li a#register {
+    border: 1px solid #FFF;
+    border-radius: 1em;
+    padding: 0.31em 0.8em;
+}
+
+#page-heading {
+    margin: 3rem auto;
+    text-align: center;
+}
+
+#page-heading h1 {
+    font-size: 2.5em;
+}
+
+#bikes-container {
+    width: 100%;
+    height: 100%;
+    padding: 1.5rem 10%;
+    box-sizing: border-box;
+}
+
+#bikes {
+    background-color: #FFF;
+    width: 100%;
+    height: 100%;
+    padding: 5%;
+    box-sizing: border-box;
+    box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 1em;
+}
