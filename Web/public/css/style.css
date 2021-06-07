@@ -43,6 +43,8 @@ nav {
     display: flex;
     justify-content: space-between;
     padding: 1.5rem 5vw;
+
+    align-items: center;
 }
 
 ul {
@@ -52,6 +54,9 @@ ul {
     margin-block-start: 0;
     margin-block-end: 0;
     padding-inline-start: 0;
+
+    display: flex;
+    align-items: center;
 }
 
 ul li {
@@ -67,12 +72,53 @@ ul li a {
     text-decoration: none;
     color: rgb(255, 255, 255);
     font-size: 1.1em;
+    position: relative;
+    display: inline-block;
+}
+
+nav ul li a:after {
+    content: "";
+    background: rgba(228, 228, 228, 0.6);
+    display: block;
+    position: absolute;
+    width: 0;
+    height: 2px;
+    left: 50%;
+    transition: width 0.2s ease 0s, left 0.2s ease 0s;
+}
+
+nav ul li a:hover:after {
+    width: 100%;
+    left: 0;
+}
+
+ul li a#home {
+    font-size: 2em;
+    margin-right: 0.25em;
+}
+
+ul li a#home:hover:after {
+    width: 0;
+    left: 0;
 }
 
 ul li a#register {
     border: 1px solid #FFF;
     border-radius: 1em;
     padding: 0.31em 0.8em;
+    transition: 0.2s;
+    color: rgb(255, 255, 255);
+}
+
+ul li a#register:hover:after {
+    width: 0;
+    left: 0;
+}
+
+ul li a#register:hover {
+    background-color: #FFF;
+    color: #5c8cb4;
+    transition: 0.2s;
 }
 
 #page-heading {
@@ -80,8 +126,21 @@ ul li a#register {
     text-align: center;
 }
 
+#page-heading i {
+    font-size: 5em;
+    font-weight: lighter;
+}
+
 #page-heading h1 {
+    font-weight: normal;
     font-size: 2.5em;
+    margin-block-start: 0;
+    margin-block-end: 0.33em;
+}
+
+#page-heading hr {
+    width: 10em;
+    border: 1px solid rgba(228, 228, 228, 0.6);
 }
 
 #bikes-container {
@@ -92,7 +151,7 @@ ul li a#register {
 }
 
 #bikes {
-    background-color: #FFF;
+    background-color: rgba(255, 255, 255, 0.9);
     width: 100%;
     height: 100%;
     padding: 5%;
