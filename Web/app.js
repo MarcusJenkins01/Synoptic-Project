@@ -19,7 +19,7 @@ app.set('views', path.join(__dirname, '/views/'));
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => {
-    var query = `SELECT bike_id, brand, bike_image, available, COALESCE(ROUND(AVG(rating)), 0) AS rating
+    var query = `SELECT bike_id, price, brand, bike_image, available, COALESCE(ROUND(AVG(rating)), 0) AS rating
     FROM bike
     LEFT JOIN rating
     USING (bike_id)
@@ -37,6 +37,7 @@ app.get('/', (req, res) => {
             if (bike.available) {
                 available_bikes[key] = {
                     bike_id: bike.bike_id,
+                    price: bike.price,
                     brand: bike.brand,
                     bike_image: bike.bike_image,
                     rating: bike.rating
@@ -80,6 +81,7 @@ app.get('/bikes', (req, res) => {
             },
             bike_details: {
                 bike_id: record.bike_id,
+                price: record.price,
                 brand: record.brand,
                 available: record.available,
                 bike_image: record.bike_image

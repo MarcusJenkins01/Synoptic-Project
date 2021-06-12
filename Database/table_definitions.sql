@@ -5,6 +5,9 @@ CREATE DOMAIN PHONE_NUMBER AS TEXT
 CREATE DOMAIN MD5_32 AS VARCHAR(32)
 	CHECK (VALUE ~ '^[a-f0-9]{32}$');
 
+-- Allow up to 10 billion
+CREATE DOMAIN CURRENCY AS NUMERIC(12, 2);
+
 CREATE TABLE lender (
 	lender_id SERIAL PRIMARY KEY,
 	first_name TEXT NOT NULL,
@@ -23,9 +26,11 @@ CREATE TABLE customer (
 CREATE TABLE bike (
 	bike_id MD5_32 PRIMARY KEY,
 	lender_id INTEGER NOT NULL,
+	price CURRENCY DEFAULT 25 NOT NULL,
 	bike_image TEXT DEFAULT 'img/bikes/no_image.png' NOT NULL,
 	available BOOLEAN DEFAULT false NOT NULL,
 	brand TEXT DEFAULT 'Unspecified' NOT NULL,
+	CHECK (price >= 1 AND price <= 1000),
 	FOREIGN KEY (lender_id) REFERENCES lender (lender_id)
 		ON DELETE RESTRICT ON UPDATE CASCADE
 );
