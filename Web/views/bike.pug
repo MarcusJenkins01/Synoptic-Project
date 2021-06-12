@@ -51,41 +51,5 @@ html(lang="en")
                         li
                             a#register(href="/register") Register
                 
-                #page-heading
-                    h2 Choose your ride
-                    hr
-
                 #page-container
-                    #bikes
-                        each bike in bikes
-                            .bike-container
-                                .bike
-                                    .img-container
-                                        img(src=bike.bike_image, alt="")
-
-                                    .info-container
-                                        .top-info
-                                            .tags-container
-                                                .distance
-                                                    i.distance-icon(class="fas fa-map-marker-alt")
-                                                    | &nbsp;5 miles
-                                                    
-                                                .price
-                                                    i.price-icon(class="fas fa-coins")
-                                                    | &nbsp;10 S/hour
-
-                                            h2= bike.brand
-                                            .reviews
-                                                - for (var i = 1; i <= 5; ++i) {
-                                                    if bike.rating >= i
-                                                        i(class="fa fa-star checked")
-                                                    else
-                                                        i(class="fa fa-star")
-                                                - }
-
-                                                span.rating-text
-                                                    | &nbsp;
-                                                    =bike.rating
-                                                    | /5
-                                        
-                                        a.view-bike(href="/bikes?id=" + bike.bike_id) View bike
+                    #bike-page-container

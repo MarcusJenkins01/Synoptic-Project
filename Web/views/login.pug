@@ -1,0 +1,58 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Login
+
+        link(rel="stylesheet", href="css/style.css")
+        link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&display=swap")
+        link(rel="stylesheet", href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css")
+
+        script(src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit")
+        script(src="js/translate.js")
+    body
+        #google_translate_element
+
+        main
+            #contact-banner
+                ul
+                    li
+                        button#translate-button(type="button" onclick="translatePage();" class="notranslate")
+                            i(class="fas fa-exchange-alt")
+                            | Español / English
+                
+                ul
+                    li
+                        a.notranslate(href="mailto:" + contact_details.email)
+                            i(class="far fa-envelope")
+                            =contact_details.email
+
+                    li
+                        a.notranslate(href="tel:" + contact_details.phone)
+                            i(class="fas fa-mobile-alt")
+                            =contact_details.phone
+
+            .dark-overlay
+                nav
+                    ul
+                        li
+                            a(href="/")#home
+                                i(class="fad fa-biking")
+                        li
+                            a(href="/") See Bikes
+                        li
+                            a(href="/") Meet the Lenders
+                    
+                    ul
+                        li
+                            a(href="/login") Login
+                        li
+                            a#register(href="/register") Register
+
+                #login-register-container
+                    form(action="", method="post")
+                        .input-label-container
+                            label(for="phone_number") Phone number
+                            input(type="tel" name="phone_number" id="phone_number")
