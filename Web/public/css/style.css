@@ -291,10 +291,12 @@ ul li a#register:hover {
 
 /* Login/register pages */
 #login-register-container {
-    width: 100%;
-    height: 20em;
-    padding: 1.5em 30%;
+    width: 100em;
+    width: 24em;
+    display: block;
     box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #login-register-container > form {
@@ -302,16 +304,62 @@ ul li a#register:hover {
     width: 100%;
     height: 100%;
     border-radius: 1em;
+    padding: 1.2em 1.2em;
     box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.input-label-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.6em;
 }
 
 .input-label-container > label {
     display: block;
-    color:black;
+    color: rgb(61, 61, 61);
 }
 
-.input-label-container > input {
+.input-label-container > input, .input-label-container > select {
     display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.4em 0.4em;
+
+    outline: none;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+
+    border-radius: 0.25em;
+}
+
+form > button[type="submit"] {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
+
+    font-size: 1em;
+    color: #FFF;
+    background-color: rgb(95, 142, 196);
+    border-radius: 0.25em;
+    padding: 0.5em 0.75em;
+    box-sizing: border-box;
+    text-align: center;
+
+    outline: none;
+    border: none;
+}
+
+#error {
+    color: rgb(233, 57, 57);
+    text-align: center;
+}
+
+#error h2 {
+    font-size: 1em;
+    font-weight: normal;
+    margin-block-end: 0;
 }
 
 /* Bike page */

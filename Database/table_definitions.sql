@@ -5,7 +5,7 @@ CREATE DOMAIN PHONE_NUMBER AS TEXT
 CREATE DOMAIN MD5_32 AS VARCHAR(32)
 	CHECK (VALUE ~ '^[a-f0-9]{32}$');
 
--- Allow up to 10 billion
+-- Allows money up to 10 billion to be stored
 CREATE DOMAIN CURRENCY AS NUMERIC(12, 2);
 
 CREATE TABLE lender (
@@ -60,6 +60,22 @@ CREATE TABLE rating (
 		ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+CREATE TABLE message {
+	message_id SERIAL PRIMARY KEY,
+	bike_id MD5_32 NOT NULL,
+	lender_id INTEGER NOT NULL,
+	customer_id INTEGER NOT NULL,
+	from_lender BOOLEAN NOT NULL,
+	message TEXT NOT NULL,
+	FOREIGN KEY (bike_id) REFERENCES bike (bike_id)
+		ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (lender_id) REFERENCES customer (lender_id)
+		ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY (customer_id) REFERENCES customer (customer_id)
+		ON DELETE RESTRICT ON UPDATE CASCADE
+}
+
+
 -- Insert a bike with an automatically generated unique hash for the primary key
 CREATE OR REPLACE PROCEDURE insert_unique_bike(lender INTEGER, is_available BOOLEAN, image_url TEXT DEFAULT 'img/bikes/no_image.png')
 AS $$
@@ -90,6 +106,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
 -- Trigger to prevent more than one review being placed on a bike by the same customer
 CREATE OR REPLACE FUNCTION check_customer_ratings()
 RETURNS TRIGGER AS $$
@@ -109,6 +126,7 @@ CREATE TRIGGER check_customer_ratings
 BEFORE INSERT ON rating
 FOR EACH ROW
 EXECUTE PROCEDURE check_customer_ratings();
+
 
 -- Function to quickly return the average number of stars a bike has
 CREATE OR REPLACE FUNCTION get_number_rating(bike_hash MD5_32)

@@ -50,6 +50,10 @@ html(lang="en")
                             a(href="/login") Login
                         li
                             a#register(href="/register") Register
+                
+                #page-heading
+                    h2= page_title
+                    hr
 
                 #login-register-container
                     form(action="/submit-registration", method="post")
@@ -62,6 +66,7 @@ html(lang="en")
                             input(type="text" name="surname" id="surname" required)
                         
                         .input-label-container
+                            //- Converted to Pug by me from https://gist.github.com/andyj/7108917
                             label(for="country_code") Country code
                             select(name="country_code", id="country_code")
                                 option(data-countrycode="GB" value="+44" selected) UK (+44)
@@ -297,3 +302,6 @@ html(lang="en")
                             input(type="password" name="confirm_password" id="confirm_password" required)
                         
                         button(type="submit") Register
+
+                        #error
+                            h2= error
