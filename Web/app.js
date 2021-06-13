@@ -134,34 +134,38 @@ app.get('/register', (req, res) => {
 app.post('/login', (req, res) => {
     var details = req.body;
 
+    // Serverside validation
     if (details.username.length == 0) {
         res.send('Please enter a username');
     } else if (details.password.length == 0) {
         res.send('Please enter a password');
-    }
+    } else {
+        db.client.query('SELECT * FROM customer WHERE username = $1;', [details.username])
+        .then((db_res) => {
+            if (db_res.rows.length == 0) {
+                res.send('No user exists with this username');
+            } else {
+                var record = db_res.rows[0];
+                
+                // Check if the hash of the given password matches the hash of the stored password
+                bcrypt.compare(details.password, record.password)
+                .then((matches) => {
+                    if (matches) {
+                        console.log('Logged in!');
+                        res.redirect('/');  // Return to home page
+                    } else {
+                        res.send('Password incorrect');
+                    }
+                });
+            }
+        })
+        .catch((db_err) => {
+            console.log(db_err);
 
-    db.client.query('SELECT * FROM customer WHERE username = $1;', [details.username])
-    .then((db_res) => {
-        if (db_res.rows.length == 0) {
-            res.send('No user exists with this username');
-        } else {
-            var record = db_res.rows[0];
-            
-            bcrypt.compare(details.password, record.password)
-            .then((matches) => {
-                if (matches) {
-                    console.log('Logged in!');
-                    res.redirect('/');  // Return to home page
-                } else {
-                    res.send('Password incorrect');
-                }
-            });
-        }
-    })
-    .catch((db_err) => {
-        res.send('<h2>Database error, please try again later.<h2>');
-        console.log(db_err);
-    });
+            // Error accessing the customer table
+            res.send('Error retrieving accounts, try again later');
+        });
+    }
 });
 
 app.post('/register', (req, res) => {
