@@ -272,13 +272,21 @@ ul li a#register:hover {
 
 .info-container > .view-bike {
     text-decoration: none;
-    color: #FFF;
-    background-color: rgb(109, 149, 196);
     border-radius: 0.25em;
     width: 100%;
     padding: 0.2em 0.5em;
     box-sizing: border-box;
     text-align: center;
+
+    color: rgb(77, 127, 185);
+    border: 1px solid rgb(77, 127, 185);
+    transition: 0.2s;
+}
+
+.info-container > .view-bike:hover {
+    color: #FFF;
+    border-color: #FFF;
+    background-color: rgb(77, 127, 185);
 }
 
 .top-info > .rating-text {
@@ -337,11 +345,8 @@ form > button[type="submit"] {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 2em;
 
     font-size: 1em;
-    color: #FFF;
-    background-color: rgb(95, 142, 196);
     border-radius: 0.25em;
     padding: 0.5em 0.75em;
     box-sizing: border-box;
@@ -349,6 +354,18 @@ form > button[type="submit"] {
 
     outline: none;
     border: none;
+
+    cursor: pointer;
+
+    color: rgb(77, 127, 185);
+    border: 1px solid rgb(77, 127, 185);
+    transition: 0.2s;
+}
+
+form > button[type="submit"]:hover {
+    color: #FFF;
+    border-color: #FFF;
+    background-color: rgb(77, 127, 185);
 }
 
 #error {
@@ -360,6 +377,15 @@ form > button[type="submit"] {
     font-size: 1em;
     font-weight: normal;
     margin-block-end: 0;
+}
+
+.recaptcha-container {
+    text-align: center;
+    margin: 1.5em 0 1em;
+}
+
+.g-recaptcha {
+    display: inline-block;
 }
 
 /* Bike page */

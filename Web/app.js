@@ -131,40 +131,19 @@ app.get('/register', (req, res) => {
     });
 });
 
-app.post('/submit-login', (req, res) => {
+app.post('/login', (req, res) => {
     var details = req.body;
 
     if (details.username.length == 0) {
-        res.render('login.pug', {
-            page_title: 'Login',
-            contact_details: {
-                phone: phone_number,
-                email: contact_email
-            },
-            error: 'Please enter a username'
-        });
+        res.send('Please enter a username');
     } else if (details.password.length == 0) {
-        res.render('login.pug', {
-            page_title: 'Login',
-            contact_details: {
-                phone: phone_number,
-                email: contact_email
-            },
-            error: 'Please enter a password'
-        });
+        res.send('Please enter a password');
     }
 
     db.client.query('SELECT * FROM customer WHERE username = $1;', [details.username])
     .then((db_res) => {
         if (db_res.rows.length == 0) {
-            res.render('login.pug', {
-                page_title: 'Login',
-                contact_details: {
-                    phone: phone_number,
-                    email: contact_email
-                },
-                error: 'No user exists with this username'
-            });
+            res.send('No user exists with this username');
         } else {
             var record = db_res.rows[0];
             
@@ -174,14 +153,7 @@ app.post('/submit-login', (req, res) => {
                     console.log('Logged in!');
                     res.redirect('/');  // Return to home page
                 } else {
-                    res.render('login.pug', {
-                        page_title: 'Login',
-                        contact_details: {
-                            phone: phone_number,
-                            email: contact_email
-                        },
-                        error: 'Incorrect password'
-                    });
+                    res.send('Password incorrect');
                 }
             });
         }
@@ -192,46 +164,18 @@ app.post('/submit-login', (req, res) => {
     });
 });
 
-app.post('/submit-registration', (req, res) => {
+app.post('/register', (req, res) => {
     var details = req.body;
-    var full_phone_number = details.country_code + details.phone_number;
-    
+
+    // Do checks on the serverside as well to prevent any exploits
     if (details.username.length == 0) {
-        res.render('register.pug', {
-            page_title: 'Register',
-            contact_details: {
-                phone: phone_number,
-                email: contact_email
-            },
-            error: 'Please enter a username'
-        });
+        res.send('Please enter a username')
     } else if (details.password.length == 0) {
-        res.render('register.pug', {
-            page_title: 'Register',
-            contact_details: {
-                phone: phone_number,
-                email: contact_email
-            },
-            error: 'Please enter a password'
-        });
+        res.send('Please enter a password')
     } else if (details.confirm_password.length == 0) {
-        res.render('register.pug', {
-            page_title: 'Register',
-            contact_details: {
-                phone: phone_number,
-                email: contact_email
-            },
-            error: 'Please confirm your password'
-        });
+        res.send('Please confirm your password')
     } else if (details.confirm_password != details.password) {
-        res.render('register.pug', {
-            page_title: 'Register',
-            contact_details: {
-                phone: phone_number,
-                email: contact_email
-            },
-            error: 'Passwords do not match'
-        });
+        res.send('Passwords do not match')
     } else {
         db.client.query('SELECT * FROM customer WHERE username = $1', [details.username])
         .then((db_res) => {
@@ -240,48 +184,26 @@ app.post('/submit-registration', (req, res) => {
                 bcrypt.hash(details.password, 10)
                 .then((hashed_pass) => {
                     db.client.query(`INSERT INTO customer (first_name, surname, contact_number, username, password)
-                        VALUES ($1, $2, $3, $4, $5)`, [details.first_name, details.surname, full_phone_number, details.username, hashed_pass]);
-                })
-                .catch((db_err) => {
-                    console.log(db_err);
-    
-                    // Was a database error so return the user to the register page
-                    res.render('register.pug', {
-                        page_title: 'Register',
-                        contact_details: {
-                            phone: phone_number,
-                            email: contact_email
-                        },
-                        error: 'Failed to add your details to the database'
+                        VALUES ($1, $2, $3, $4, $5)`, [details.first_name, details.surname, full_phone_number, details.username, hashed_pass])
+                    .catch((db_err) => {
+                        console.log(db_err);
+        
+                        // Error inserting customer record
+                        res.send('Error adding account to database');
                     });
                 });
             } else {
                 // Database returned a record so username already in use
-                res.render('register.pug', {
-                    page_title: 'Register',
-                    contact_details: {
-                        phone: phone_number,
-                        email: contact_email
-                    },
-                    error: 'Username is already in use'
-                });
+                res.send('Username already in use');
             }
         })
         .catch((db_err) => {
             console.log(db_err);
     
-            // Was a database error so return the user to the register page
-            res.render('register.pug', {
-                page_title: 'Register',
-                contact_details: {
-                    phone: phone_number,
-                    email: contact_email
-                },
-                error: 'Failed to retrieve accounts from database'
-            });
+            // Error accessing the customer table
+            res.send('Error retrieving accounts, try again later');
         });
     }
-
 });
 
 // Set up a listen server using Express

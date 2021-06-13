@@ -4,14 +4,24 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title Login
+        title Register
 
         link(rel="stylesheet", href="css/style.css")
         link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&display=swap")
         link(rel="stylesheet", href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css")
 
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
         script(src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit")
-        script(src="js/translate.js")
+        script(src="https://www.google.com/recaptcha/api.js" async defer)
+        script(src="js/translate.js" defer)
+        script(src="js/form-submission.js")
+
+        script.
+            //- Set up my override to use AJAX instead on the register form
+            window.addEventListener('DOMContentLoaded', function() {
+                initialiseFormOverride('/login');
+            });
+        
     body
         #google_translate_element
 

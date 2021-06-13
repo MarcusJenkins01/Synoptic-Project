@@ -10,8 +10,18 @@ html(lang="en")
         link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&display=swap")
         link(rel="stylesheet", href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css")
 
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
         script(src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit")
-        script(src="js/translate.js")
+        script(src="https://www.google.com/recaptcha/api.js" async defer)
+        script(src="js/translate.js" defer)
+        script(src="js/form-submission.js")
+
+        script.
+            //- Set up my override to use AJAX instead on the register form
+            window.addEventListener('DOMContentLoaded', function() {
+                initialiseFormOverride('/register');
+            });
+            
     body
         #google_translate_element
 
@@ -56,7 +66,7 @@ html(lang="en")
                     hr
 
                 #login-register-container
-                    form(action="/submit-registration", method="post")
+                    form(action="" method="post")
                         .input-label-container
                             label(for="first_name") First name
                             input(type="text" name="first_name" id="first_name" required)
@@ -301,6 +311,9 @@ html(lang="en")
                             label(for="confirm_password") Confirm password
                             input(type="password" name="confirm_password" id="confirm_password" required)
                         
+                        .recaptcha-container
+                            .g-recaptcha(data-sitekey="6LfYVS4bAAAAAN1VaKv9W9gmOPbxwrY68zn7qjDQ")
+
                         button(type="submit") Register
 
                         #error
