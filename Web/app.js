@@ -5,7 +5,6 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const body_parser = require('body-parser');
 const fetch = require('node-fetch');
-const { uuid } = require('uuidv4');
 
 // Include our database file
 const db = require('./db.js');
