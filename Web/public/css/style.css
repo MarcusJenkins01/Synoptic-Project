@@ -1,8 +1,6 @@
 body {
     margin: 0;
     padding: 0;
-
-    height: 100%;
 }
 
 #google_translate_element {
@@ -299,12 +297,12 @@ ul li a#register:hover {
 
 /* Login/register pages */
 #login-register-container {
-    width: 100em;
-    width: 24em;
+    max-width: 24em;
     display: block;
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
+    padding: 0 1em 2em;
 }
 
 #login-register-container > form {
