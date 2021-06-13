@@ -52,7 +52,15 @@ html(lang="en")
                             a#register(href="/register") Register
 
                 #login-register-container
-                    form(action="", method="post")
+                    form(action="/submit-login", method="post")
                         .input-label-container
-                            label(for="phone_number") Phone number
-                            input(type="tel" name="phone_number" id="phone_number")
+                            label(for="username") Username
+                            input(type="text" name="username" id="username")
+                        
+                        .input-label-container
+                            label(for="password") Password
+                            input(type="password" name="password" id="password")
+
+                        button(type="submit") Login
+                        
+                        

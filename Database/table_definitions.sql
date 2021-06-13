@@ -20,7 +20,9 @@ CREATE TABLE customer (
 	customer_id SERIAL PRIMARY KEY,
 	first_name TEXT NOT NULL,
 	surname TEXT NOT NULL,
-	contact_number PHONE_NUMBER
+	contact_number PHONE_NUMBER NOT NULL,
+	username TEXT NOT NULL UNIQUE,
+	password TEXT NOT NULL
 );
 
 CREATE TABLE bike (
@@ -50,6 +52,7 @@ CREATE TABLE rating (
 	bike_id MD5_32 NOT NULL,
 	customer_id INTEGER NOT NULL,
 	rating INTEGER NOT NULL,
+	logged_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	comment TEXT DEFAULT 'No comment' NOT NULL,
 	FOREIGN KEY (bike_id) REFERENCES bike (bike_id)
 		ON DELETE RESTRICT ON UPDATE CASCADE,
