@@ -51,6 +51,14 @@ function initialiseFormOverride(action) {
             cache: false,
             success: function(data) {
                 error_text.textContent = data;
+
+                // Reset captcha
+                grecaptcha.reset();
+
+                // If no errors then user must be logged in/registered
+                if (data.length == 0) {
+                    window.location.href = '/';
+                }
             },
             error: function(_, text_status, err) {
                 console.log(err);

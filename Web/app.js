@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const body_parser = require('body-parser');
+const fetch = require('node-fetch');
 
 // Include our database file
 const db = require('./db.js');
@@ -17,6 +18,9 @@ const port = 3000;
 const phone_number = '+440123456789';
 const contact_email = 'contactus@lobike.com';
 
+// Our secret token for recaptcha
+const recaptcha_secret = '6LfYVS4bAAAAAKYYW4ULWua5inLYwjoBANmOZF-_';
+
 // Set up Pug as our view engine
 app.set('view engine', 'pug')
 app.set('views', path.join(__dirname, '/views/'));
@@ -28,6 +32,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(body_parser.urlencoded({extended: false}));
 app.use(body_parser.json());
 
+// Index page
 app.get('/', (req, res) => {
     var query = `SELECT bike_id, price, brand, bike_image, available, COALESCE(ROUND(AVG(rating)), 0) AS rating
     FROM bike
@@ -70,6 +75,7 @@ app.get('/', (req, res) => {
     });
 });
 
+// Individual bike page
 app.get('/bikes', (req, res) => {
     const bike_id = req.query.id;
 
@@ -109,6 +115,7 @@ app.get('/bikes', (req, res) => {
     });
 });
 
+// Login page
 app.get('/login', (req, res) => {
     res.render('login.pug', {
         page_title: 'Login',
@@ -120,6 +127,7 @@ app.get('/login', (req, res) => {
     });
 });
 
+// Register page
 app.get('/register', (req, res) => {
     res.render('register.pug', {
         page_title: 'Register',
@@ -131,83 +139,125 @@ app.get('/register', (req, res) => {
     });
 });
 
+// Handle login form
 app.post('/login', (req, res) => {
     var details = req.body;
+    var captcha_response = details['g-recaptcha-response'];
 
-    // Serverside validation
-    if (details.username.length == 0) {
-        res.send('Please enter a username');
-    } else if (details.password.length == 0) {
-        res.send('Please enter a password');
-    } else {
-        db.client.query('SELECT * FROM customer WHERE username = $1;', [details.username])
-        .then((db_res) => {
-            if (db_res.rows.length == 0) {
-                res.send('No user exists with this username');
+    fetch('https://www.google.com/recaptcha/api/siteverify', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `secret=${recaptcha_secret}&response=${captcha_response}`
+    })
+    .then((fetch_res) => fetch_res.json())
+    .then((res_json) => {
+        var captcha_successful = res_json.success;
+
+        if (captcha_successful) {
+            // Serverside validation
+            if (details.username.length == 0) {
+                res.send('Please enter a username');
+            } else if (details.password.length == 0) {
+                res.send('Please enter a password');
             } else {
-                var record = db_res.rows[0];
-                
-                // Check if the hash of the given password matches the hash of the stored password
-                bcrypt.compare(details.password, record.password)
-                .then((matches) => {
-                    if (matches) {
-                        console.log('Logged in!');
-                        res.redirect('/');  // Return to home page
+                db.client.query('SELECT * FROM customer WHERE username = $1;', [details.username])
+                .then((db_res) => {
+                    if (db_res.rows.length == 0) {
+                        res.send('No user exists with this username');
                     } else {
-                        res.send('Password incorrect');
+                        var record = db_res.rows[0];
+                        
+                        // Check if the hash of the given password matches the hash of the stored password
+                        bcrypt.compare(details.password, record.password)
+                        .then((matches) => {
+                            if (matches) {
+                                // Send empty string to signify no error to AJAX
+                                res.send('');
+                            } else {
+                                res.send('Password incorrect');
+                            }
+                        });
                     }
+                })
+                .catch((db_err) => {
+                    console.log(db_err);
+
+                    // Error accessing the customer table
+                    res.send('Error retrieving accounts, try again later');
                 });
             }
-        })
-        .catch((db_err) => {
-            console.log(db_err);
-
-            // Error accessing the customer table
-            res.send('Error retrieving accounts, try again later');
-        });
-    }
+        } else {
+            res.send('Please complete the captcha');
+        }
+    })
+    .catch((fetch_err) => {
+        res.send('Error validating captcha');
+    });
 });
 
+// Handle register form
 app.post('/register', (req, res) => {
     var details = req.body;
+    var captcha_response = details['g-recaptcha-response'];
 
-    // Do checks on the serverside as well to prevent any exploits
-    if (details.username.length == 0) {
-        res.send('Please enter a username')
-    } else if (details.password.length == 0) {
-        res.send('Please enter a password')
-    } else if (details.confirm_password.length == 0) {
-        res.send('Please confirm your password')
-    } else if (details.confirm_password != details.password) {
-        res.send('Passwords do not match')
-    } else {
-        db.client.query('SELECT * FROM customer WHERE username = $1', [details.username])
-        .then((db_res) => {
-            if (db_res.rows.length == 0) {
-                // Hash the password and insert the customer into the database
-                bcrypt.hash(details.password, 10)
-                .then((hashed_pass) => {
-                    db.client.query(`INSERT INTO customer (first_name, surname, contact_number, username, password)
-                        VALUES ($1, $2, $3, $4, $5)`, [details.first_name, details.surname, full_phone_number, details.username, hashed_pass])
-                    .catch((db_err) => {
-                        console.log(db_err);
-        
-                        // Error inserting customer record
-                        res.send('Error adding account to database');
-                    });
-                });
+    fetch('https://www.google.com/recaptcha/api/siteverify', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `secret=${recaptcha_secret}&response=${captcha_response}`
+    })
+    .then((fetch_res) => fetch_res.json())
+    .then((res_json) => {
+        var captcha_successful = res_json.success;
+
+        if (captcha_successful) {
+            // Do checks on the serverside as well to prevent any exploits
+            if (details.username.length == 0) {
+                res.send('Please enter a username');
+            } else if (details.password.length == 0) {
+                res.send('Please enter a password');
+            } else if (details.confirm_password.length == 0) {
+                res.send('Please confirm your password');
+            } else if (details.confirm_password != details.password) {
+                res.send('Passwords do not match');
             } else {
-                // Database returned a record so username already in use
-                res.send('Username already in use');
+                db.client.query('SELECT * FROM customer WHERE username = $1', [details.username])
+                .then((db_res) => {
+                    if (db_res.rows.length == 0) {
+                        // Hash the password and insert the customer into the database
+                        bcrypt.hash(details.password, 10)
+                        .then((hashed_pass) => {
+                            db.client.query(`INSERT INTO customer (first_name, surname, contact_number, username, password)
+                                VALUES ($1, $2, $3, $4, $5)`, [details.first_name, details.surname, full_phone_number, details.username, hashed_pass])
+                            .then((db_res) => {
+                                // Send empty string to signify no error to AJAX
+                                res.send('');
+                            })
+                            .catch((db_err) => {
+                                console.log(db_err);
+                
+                                // Error inserting customer record
+                                res.send('Error adding account to database');
+                            });
+                        });
+                    } else {
+                        // Database returned a record so username already in use
+                        res.send('Username already in use');
+                    }
+                })
+                .catch((db_err) => {
+                    console.log(db_err);
+            
+                    // Error accessing the customer table
+                    res.send('Error retrieving accounts, try again later');
+                });
             }
-        })
-        .catch((db_err) => {
-            console.log(db_err);
-    
-            // Error accessing the customer table
-            res.send('Error retrieving accounts, try again later');
-        });
-    }
+        } else {
+            res.send('Please complete the captcha');
+        }
+    })
+    .catch((fetch_err) => {
+        res.send('Error validating captcha');
+    });
 });
 
 // Set up a listen server using Express
