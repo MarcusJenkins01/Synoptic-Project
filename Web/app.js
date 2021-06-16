@@ -179,8 +179,7 @@ app.post('/bike-review', (req, res) => {
         res.send('You must be logged in to leave a review!');
     } else {
         var customer_id = req.session.userid;
-        console.log(bike_id);
-
+        
         db.client.query(`SELECT * FROM rating WHERE customer_id = $1 AND bike_id = $2;`, [customer_id, bike_id])
         .then((db_res) => {
             if (db_res.rows.length > 0) {

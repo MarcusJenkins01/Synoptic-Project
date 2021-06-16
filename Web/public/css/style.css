@@ -428,7 +428,7 @@ form > button[type="submit"]:hover {
     margin-right: auto;
 }
 
-#bike-page-container h2 {
+#bike-page-container form > h2, #bike-page-container > #right h2 {
     font-weight: normal;
     font-size: 1.3em;
     margin-block-start: 0;
@@ -520,9 +520,36 @@ form > button[type="submit"]:hover {
 }
 
 #reviews > form > h2 {
-    margin-block-start: 0;
+    margin-block-start: 0.5em;
     font-weight: normal;
     font-size: 1.1em;
+}
+
+#reviews > form .rating-radio-container {
+    display: inline-block;
+    margin-right: 2px;
+    margin-bottom: 0.5em;
+}
+
+#reviews > form input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    width: 1rem;
+    height: 1rem;
+}
+
+#reviews > form .rating-star {
+    width: 1rem;
+    height: 1rem;
+}
+
+.rating-radio-container:hover input[type="radio"] ~ .rating-star {
+    color: rgb(150, 135, 88);
+}
+
+#reviews > form input[type="radio"]:checked ~ .rating-star {
+    color: rgb(240, 187, 14);
 }
 
 #reviews > form > textarea {
@@ -540,6 +567,13 @@ form > button[type="submit"]:hover {
 
 #reviews > form button[type="submit"] {
     width: 100%;
+    background-color: rgb(109, 154, 206);
+    border: none;
+    color: #FFF;
+}
+
+#reviews > form button[type="submit"]:hover {
+    background-color: rgb(92, 133, 179);
 }
 
 #reviews > .full-review {
