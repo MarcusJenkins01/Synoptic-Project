@@ -602,11 +602,24 @@ form > button[type="submit"]:hover {
     #bikes > .bike-container {
         width: 50%;
     }
+
+    #bike-page-container {
+        width: 80%;
+    }
 }
 
 @media only screen and (max-width: 950px) {
     #bikes > .bike-container {
         width: 100%;
+    }
+
+    #bike-page-container {
+        width: 100%;
+    }
+
+    #page-container {
+        padding-left: 1em;
+        padding-right: 1em;
     }
 }
 
