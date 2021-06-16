@@ -61,6 +61,7 @@ function initialiseFormOverride(action) {
                 }
             },
             error: function(_, text_status, err) {
+                error_text.textContent = 'An error occurred';
                 console.log(err);
             }
         });

@@ -34,15 +34,17 @@ app.use(body_parser.urlencoded({extended: false}));
 app.use(body_parser.json());
 
 // Set up a session using a random unique session ID
-app.use(session({
-    secret: 'viq1&S9nmmgP3iyly4u6*NKz',
-    resave: false,
-    saveUninitialized: false
-}));
+app.use(session(
+    {
+        secret: 'viq1&S9nmmgP3iyly4u6*NKz',
+        resave: false,
+        saveUninitialized: false
+    }
+));
 
 // Index page
 app.get('/', (req, res) => {
-    var query = `SELECT bike_id, price, brand, bike_image, available, COALESCE(ROUND(AVG(rating)), 0) AS rating
+    let query = `SELECT bike_id, price, brand, bike_image, available, latitude, longitude, COALESCE(ROUND(AVG(rating)), 0) AS rating, COUNT(rating) AS rating_count
     FROM bike
     LEFT JOIN rating
     USING (bike_id)
@@ -51,6 +53,7 @@ app.get('/', (req, res) => {
     db.client.query(query)
     .then((db_res) => {
         var available_bikes = {};
+        var bike_locations = {};
 
         for (var key in db_res.rows) {
             var bike = db_res.rows[key];
@@ -61,7 +64,13 @@ app.get('/', (req, res) => {
                     price: bike.price,
                     brand: bike.brand,
                     bike_image: bike.bike_image,
-                    rating: bike.rating
+                    rating: bike.rating,
+                    rating_count: bike.rating_count
+                }
+
+                bike_locations[bike.bike_id] = {
+                    latitude: bike.latitude,
+                    longitude: bike.longitude
                 }
             }
         }
@@ -73,6 +82,7 @@ app.get('/', (req, res) => {
                 email: contact_email
             },
             bikes: available_bikes,
+            bike_locations: bike_locations,
             user_details: {
                 logged_in: req.session.loggedin,
                 user_id: req.session.userid,
@@ -90,7 +100,7 @@ app.get('/', (req, res) => {
 app.get('/bikes', (req, res) => {
     const bike_id = req.query.id;
 
-    const db_query = `SELECT * FROM bike
+    const db_query = `SELECT bike.*, lender.* FROM bike
     INNER JOIN lender
     USING (lender_id)
     WHERE bike_id = $1;`;  // Parameterised query to protect against SQL injection
@@ -98,32 +108,106 @@ app.get('/bikes', (req, res) => {
     db.client.query(db_query, [bike_id])
     .then((db_res) => {
         var record = db_res.rows[0];
+        
+        let query = `SELECT * FROM rating
+        INNER JOIN customer
+        USING (customer_id)
+        WHERE bike_id = $1;`;
 
-        res.render('bike.pug', {
-            lender_details: {
-                lender_id: record.lender_id,
-                first_name: record.first_name,
-                surname: record.surname,
-                contact_number: record.contact_number,
-                photo_url: record.photo_url
-            },
-            bike_details: {
-                bike_id: record.bike_id,
-                price: record.price,
-                brand: record.brand,
-                available: record.available,
-                bike_image: record.bike_image
-            },
-            contact_details: {
-                phone: phone_number,
-                email: contact_email
-            }
+        db.client.query(query, [record.bike_id])
+        .then((rating_res) => {
+            var ratings = rating_res.rows;
+            var rating_count = ratings.length;
+
+            db.client.query(`SELECT * FROM get_number_rating($1) AS rating_number;`, [record.bike_id])
+            .then((avg_rating_res) => {
+                var rating_number = avg_rating_res.rows[0].rating_number;
+
+                res.render('bike.pug', {
+                    lender_details: {
+                        lender_id: record.lender_id,
+                        first_name: record.first_name,
+                        surname: record.surname,
+                        contact_number: record.contact_number,
+                        photo_url: record.photo_url
+                    },
+                    bike_details: {
+                        bike_id: record.bike_id,
+                        price: record.price,
+                        brand: record.brand,
+                        available: record.available,
+                        bike_image: record.bike_image,
+                        latitude: record.latitude,
+                        longitude: record.longitude,
+                        rating: rating_number,
+                        rating_count: rating_count,
+                        reviews: ratings
+                    },
+                    user_details: {
+                        logged_in: req.session.loggedin,
+                        user_id: req.session.userid,
+                        first_name: req.session.firstname
+                    },
+                    contact_details: {
+                        phone: phone_number,
+                        email: contact_email
+                    }
+                });
+            })
+            .catch((avg_rating_err) => {
+                res.send('<h2>Database error, please try again later.<h2>');
+                console.log(db_err);
+            });
+        })
+        .catch((rating_err) => {
+            res.send('<h2>Database error, please try again later.<h2>');
+            console.log(rating_err);
         });
     })
     .catch((db_err) => {
         res.send('<h2>Database error, please try again later.<h2>');
         console.log(db_err);
     });
+});
+
+app.post('/bike-review', (req, res) => {
+    var bike_id = req.body.bike_id;
+    var rating = req.body.rating;
+    var comment = req.body.comment;
+
+    if (!req.session || !req.session.loggedin) {
+        res.send('You must be logged in to leave a review!');
+    } else {
+        var customer_id = req.session.userid;
+        console.log(bike_id);
+
+        db.client.query(`SELECT * FROM rating WHERE customer_id = $1 AND bike_id = $2;`, [customer_id, bike_id])
+        .then((db_res) => {
+            if (db_res.rows.length > 0) {
+                res.send('You already have a review on this bike')
+            } else if (rating.length == 0 || rating < 1 || rating > 5) {
+                res.send('Please enter a rating between 1 and 5');
+            } else {
+                if (comment.length == 0) {
+                    comment = 'No comment';
+                }
+                
+                db.client.query(`INSERT INTO rating(bike_id, customer_id, rating, comment)
+                VALUES($1, $2, $3, $4)`, [bike_id, customer_id, rating, comment])
+                .then((db_res) => {
+                    res.send('');
+                })
+                .catch((db_err) => {
+                    res.send('Database error occurred, please try again');
+                    console.log(db_err);
+                });
+            }
+        })
+        .catch((db_err) => {
+            res.send('Database error occurred, please try again');
+            console.log(db_err);
+        });
+    }
 });
 
 // Login page
@@ -133,6 +217,11 @@ app.get('/login', (req, res) => {
         contact_details: {
             phone: phone_number,
             email: contact_email
+        },
+        user_details: {
+            logged_in: req.session.loggedin,
+            user_id: req.session.userid,
+            first_name: req.session.firstname
         },
         error: ''
     });
@@ -145,6 +234,11 @@ app.get('/register', (req, res) => {
         contact_details: {
             phone: phone_number,
             email: contact_email
+        },
+        user_details: {
+            logged_in: req.session.loggedin,
+            user_id: req.session.userid,
+            first_name: req.session.firstname
         },
         error: ''
     });
@@ -214,7 +308,14 @@ app.post('/login', (req, res) => {
 //
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/');
+    
+    res.render('logout.pug', {
+        page_title: 'Logout',
+        contact_details: {
+            phone: phone_number,
+            email: contact_email
+        }
+    });
 });
 
 // Handle register form

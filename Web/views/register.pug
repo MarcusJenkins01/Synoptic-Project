@@ -51,15 +51,21 @@ html(lang="en")
                             a(href="/")#home
                                 i(class="fad fa-biking")
                         li
-                            a(href="/") See Bikes
+                            a(href="/all-bikes") See Bikes
                         li
-                            a(href="/") Meet the Lenders
+                            a(href="/lenders") Meet the Lenders
                     
                     ul
-                        li
-                            a(href="/login") Login
-                        li
-                            a#register(href="/register") Register
+                        if (user_details.logged_in)
+                            li
+                                a(href="/")= user_details.first_name
+                            li
+                                a(href="/logout") Logout
+                        else
+                            li
+                                a(href="/login") Login
+                            li
+                                a#register(href="/register") Register
                 
                 #page-heading
                     h2= page_title

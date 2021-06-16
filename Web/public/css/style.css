@@ -1,6 +1,8 @@
 body {
     margin: 0;
     padding: 0;
+
+    height: 100%;
 }
 
 #google_translate_element {
@@ -240,7 +242,7 @@ ul li a#register:hover {
     flex-wrap: wrap;
 }
 
-.tags-container > .distance, .tags-container > .price {
+.distance, .price {
     display: inline-block;
     background-color: rgb(105, 184, 109);
     color: #FFF;
@@ -250,8 +252,8 @@ ul li a#register:hover {
     margin-bottom: 0.5em;
 }
 
-.tags-container > .distance {
-    background-color: rgb(109, 154, 206);;
+.distance {
+    background-color: rgb(109, 154, 206);
     margin-right: 0.5em;
 }
 
@@ -287,8 +289,16 @@ ul li a#register:hover {
     background-color: rgb(77, 127, 185);
 }
 
-.top-info > .rating-text {
-    font-size: 0.9em;
+.rating-text {
+    font-size: 0.89em;
+}
+
+.rating-count-text {
+    font-size: 0.85em;
+}
+
+.rating-count-text > a {
+    color: inherit;
 }
 
 .checked {
@@ -346,7 +356,7 @@ form > button[type="submit"] {
 
     font-size: 1em;
     border-radius: 0.25em;
-    padding: 0.5em 0.75em;
+    padding: 0.5em 1em;
     box-sizing: border-box;
     text-align: center;
 
@@ -386,15 +396,173 @@ form > button[type="submit"]:hover {
     display: inline-block;
 }
 
+#logout-text {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 1em;
+    box-sizing: border-box;
+    padding: 2em;
+}
+
+#logout-text h1 {
+    color: rgb(90, 90, 90);
+    margin-block-start: 0;
+    font-weight: normal;
+    font-size: 1.4em;
+}
+
+#logout-text h2 {
+    color: rgb(109, 109, 109);
+    font-weight: normal;
+    margin-block-end: 0;
+    font-size: 1em;
+}
+
 /* Bike page */
 #bike-page-container {
     background-color: rgba(255, 255, 255, 0.9);
-    width: 100%;
-    height: 300px;
+    width: 60%;
     border-radius: 1em;
     box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    margin-right: auto;
 }
 
+#bike-page-container h2 {
+    font-weight: normal;
+    font-size: 1.3em;
+    margin-block-start: 0;
+    margin-block-end: 0.1em;
+}
+
+#bike-page-container #price {
+    font-size: 1.5em;
+    margin-bottom: 0.4rem;
+}
+
+#bike-page-container #distance {
+    color: rgb(121, 121, 121);
+    font-size: 1em;
+}
+
+#bike-page-container #rating {
+    margin-top: 1em;
+    margin-bottom: 1.2em;
+}
+
+#bike-page-container #lender hr {
+    background-color: rgba(0, 0, 0, 0.1);
+    height: 1px;
+    border: none;
+    margin-block-start: 0.75em;
+    margin-block-end: 0.75em;
+}
+
+#lender-details img {
+    height: 4rem;
+    border-radius: 2rem;
+    display: inline-block;
+}
+
+#lender-details #name {
+    display: inline-block;
+    vertical-align: top;
+    font-weight: normal;
+    font-size: 1em;
+    padding: 0.25em 0.5em;
+    color: rgb(119, 119, 119);
+}
+
+#contact-number {
+    display: block;
+    width: 100%;
+    background-color: rgb(111, 190, 95);
+    color: #FFF;
+    padding: 0.2em;
+    text-align: center;
+    border-radius: 1em;
+    text-decoration: none;
+}
+
+#bike-page-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+#bike-page-container > #left {
+    padding: 1em;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+#bike-page-container > #right {
+    padding: 1em;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+#bike-page-container > #left > img {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 0.2em;
+    /* border: 1px solid rgba(0, 0, 0, 0.1); */
+}
+
+#bike-page-container #top {
+    color: rgb(105, 105, 105);
+}
+
+#reviews > form {
+    width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 1rem;
+    color: rgb(105, 105, 105);
+}
+
+#reviews > form > h2 {
+    margin-block-start: 0;
+    font-weight: normal;
+    font-size: 1.1em;
+}
+
+#reviews > form > textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    outline: none;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 0.25em;
+
+    resize: vertical;
+}
+
+#reviews > form button[type="submit"] {
+    width: 100%;
+}
+
+#reviews > .full-review {
+    background-color: #FFF;
+    box-sizing: border-box;
+    padding: 1rem;
+}
+
+#reviews > .full-review:last-child {
+    border-bottom-left-radius: 1rem;
+}
+
+#reviews > .full-review > .rating {
+    color:rgb(105, 105, 105);
+}
+
+#reviews > .full-review > .comment {
+    color:rgb(90, 90, 90);
+}
+
+#reviews > .full-review > .comment > .author {
+    color:rgb(114, 114, 114);
+}
 
 @media only screen and (max-width: 1500px) {
     #bikes > .bike-container {

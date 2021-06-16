@@ -12,6 +12,31 @@ html(lang="en")
 
         script(src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit")
         script(src="js/translate.js") 
+        script(src="js/geolocation.js" defer)
+
+        script.
+            const BIKE_LOCATIONS = !{JSON.stringify(bike_locations)};
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((user_position) => {
+                    for (var bike_id in BIKE_LOCATIONS) {
+                        var distance_text = document.querySelector('.distance > #dt' + bike_id);
+
+                        var bike_location = BIKE_LOCATIONS[bike_id];
+
+                        var b_lat = bike_location.latitude;
+                        var b_lon = bike_location.longitude;
+
+                        var u_lat = user_position.coords.latitude;
+                        var u_lon = user_position.coords.longitude;
+
+                        var distance = getDistance(b_lat, b_lon, u_lat, u_lon);
+
+                        distance_text.textContent = distance + ' km';
+                    }
+                });
+            }
+ 
     body
         #google_translate_element
 
@@ -41,9 +66,9 @@ html(lang="en")
                             a(href="/")#home
                                 i(class="fad fa-biking")
                         li
-                            a(href="/") See Bikes
+                            a(href="/all-bikes") See Bikes
                         li
-                            a(href="/") Meet the Lenders
+                            a(href="/lenders") Meet the Lenders
                     
                     ul
                         if (user_details.logged_in)
@@ -74,7 +99,11 @@ html(lang="en")
                                             .tags-container
                                                 .distance
                                                     i.distance-icon(class="fas fa-map-marker-alt")
-                                                    | &nbsp;5 miles
+                                                    | &nbsp;
+
+                                                    //- To be changed by JavaScript
+                                                    span(id="dt" + bike.bike_id)
+                                                        | ? km
                                                     
                                                 .price
                                                     i.price-icon(class="fas fa-coins")
@@ -82,7 +111,7 @@ html(lang="en")
                                                     =bike.price
                                                     | &nbsp;S/hour
 
-                                            h2= bike.brand
+                                            h2.notranslate= bike.brand
 
                                         .reviews
                                             - for (var i = 1; i <= 5; ++i) {
@@ -96,6 +125,12 @@ html(lang="en")
                                                 | &nbsp;
                                                 =bike.rating
                                                 | /5
+                                            
+                                            .rating-count-text
+                                                =bike.rating_count
+                                                | &nbsp;
+                                                a(href="/bikes?id=" + bike.bike_id + "#reviews")
+                                                    | reviews
                                         
                                         a.view-bike(href="/bikes?id=" + bike.bike_id) View bike
                                     

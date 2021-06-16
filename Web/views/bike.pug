@@ -10,8 +10,64 @@ html(lang="en")
         link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&display=swap")
         link(rel="stylesheet", href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css")
 
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
         script(src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit")
-        script(src="js/translate.js") 
+        script(src="js/translate.js")
+        script(src="js/geolocation.js" defer)
+
+        script.
+            window.addEventListener('DOMContentLoaded', function() {
+                var b_lat = #{bike_details.latitude};
+                var b_lon = #{bike_details.longitude};
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((user_position) => {
+                        var distance_text = document.querySelector('#distance-text');
+
+                        var u_lat = user_position.coords.latitude;
+                        var u_lon = user_position.coords.longitude;
+                        
+                        var distance = getDistance(b_lat, b_lon, u_lat, u_lon);
+
+                        distance_text.textContent = distance + ' km';
+                    });
+                }
+
+                const form = document.querySelector('#reviews form');
+                const submit_button = form.querySelector('button[type="submit"]');
+
+                submit_button.onclick = function(event) {
+                    event.preventDefault();
+
+                    var error_text = form.querySelector('#error h2');
+                    var form_data = $('#reviews form').serialize();
+
+                    // Add on the ID for the bike
+                    form_data += '&bike_id=' + '#{bike_details.bike_id}';
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/bike-review',
+                        data: form_data,
+                        cache: false,
+                        success: function(data) {
+                            error_text.textContent = data;
+
+                            // If no errors then reload page so user can see their review added
+                            if (data.length == 0) {
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 500);
+                            }
+                        },
+                        error: function(_, text_status, err) {
+                            error_text.textContent = 'An error occurred';
+                            console.log(err);
+                        }
+                    });
+                }
+            });
+
     body
         #google_translate_element
 
@@ -41,15 +97,199 @@ html(lang="en")
                             a(href="/")#home
                                 i(class="fad fa-biking")
                         li
-                            a(href="/") See Bikes
+                            a(href="/all-bikes") See Bikes
                         li
-                            a(href="/") Meet the Lenders
+                            a(href="/lenders") Meet the Lenders
                     
                     ul
-                        li
-                            a(href="/login") Login
-                        li
-                            a#register(href="/register") Register
+                        if (user_details.logged_in)
+                            li
+                                a(href="/")= user_details.first_name
+                            li
+                                a(href="/logout") Logout
+                        else
+                            li
+                                a(href="/login") Login
+                            li
+                                a#register(href="/register") Register
                 
                 #page-container
                     #bike-page-container
+                        #left
+                            img(src=bike_details.bike_image)
+
+                            #reviews
+                                form(action="/bike-review", method="post") 
+                                    h2 Leave a review
+                                    input(type="number" name="rating")
+                                    textarea(name="comment" cols="30" rows="5") 
+                                    button(type="submit") Submit
+                                
+                                    #error
+                                        h2
+
+                                each review in bike_details.reviews
+                                    .full-review
+                                        .rating
+                                            - for (var i = 1; i <= 5; ++i) {
+                                                if review.rating >= i
+                                                    i(class="fa fa-star checked")
+                                                else
+                                                    i(class="fa fa-star")
+                                            - }
+
+                                            span.rating-text
+                                                | &nbsp;
+                                                =review.rating
+                                                | /5
+                                        
+                                        .comment
+                                            =review.comment
+
+                                            span.author.notranslate
+                                                | &nbsp;-&nbsp;
+                                                =review.first_name
+                                                | &nbsp;
+                                                =review.surname[0]
+                        
+                        #right
+                            #top
+                                h2= bike_details.brand
+
+                                #price
+                                    =bike_details.price
+                                    | &nbsp;Sol per hour
+                            
+                                #distance
+                                    i(class="fas fa-map-marker-alt")
+                                    | &nbsp;
+
+                                    span#distance-text
+                                    | &nbsp;away
+                            
+                            #rating
+                                - for (var i = 1; i <= 5; ++i) {
+                                    if bike_details.rating >= i
+                                        i(class="fa fa-star checked")
+                                    else
+                                        i(class="fa fa-star")
+                                - }
+
+                                span.rating-text
+                                    | &nbsp;
+                                    =bike_details.rating
+                                    | /5
+                                
+                                .rating-count-text
+                                    =bike_details.rating_count
+                                    | &nbsp;
+                                    a(href=href="/bikes?id=" + bike_details.bike_id + "#reviews")
+                                        | reviews
+                            
+                            #lender
+                                a#contact-number(href="tel:" + lender_details.contact_number)
+                                    =lender_details.contact_number
+                                
+                                hr
+
+                                #lender-details
+                                    img(src=lender_details.photo_url alt="")
+
+                                    #name
+                                        =lender_details.first_name + " " + lender_details.surname
+
+                        //- #top-section
+                        //-     .left
+                        //-         img(src=bike_details.bike_image)
+
+                        //-     .right
+                        //-         #top
+                        //-             h2= bike_details.brand
+
+                        //-             #price
+                        //-                 =bike_details.price
+                        //-                 | &nbsp;Sol per hour
+                                
+                        //-             #distance
+                        //-                 i(class="fas fa-map-marker-alt")
+                        //-                 | &nbsp;
+
+                        //-                 span#distance-text
+                        //-                 | &nbsp;away
+                                
+                        //-         #rating
+                        //-             - for (var i = 1; i <= 5; ++i) {
+                        //-                 if bike_details.rating >= i
+                        //-                     i(class="fa fa-star checked")
+                        //-                 else
+                        //-                     i(class="fa fa-star")
+                        //-             - }
+
+                        //-             span.rating-text
+                        //-                 | &nbsp;
+                        //-                 =bike_details.rating
+                        //-                 | /5
+                                    
+                        //-             .rating-count-text
+                        //-                 =bike_details.rating_count
+                        //-                 | &nbsp;
+                        //-                 a(href=href="/bikes?id=" + bike_details.bike_id + "#reviews")
+                        //-                     | reviews
+                                
+                        //-         #lender
+                        //-             a#contact-number(href="tel:" + lender_details.contact_number)
+                        //-                 =lender_details.contact_number
+                                    
+                        //-             hr
+
+                        //-             #lender-details
+                        //-                 img(src=lender_details.photo_url alt="")
+
+                        //-                 #name
+                        //-                     =lender_details.first_name + " " + lender_details.surname
+
+                        //- #bottom-section
+                        //-     .left
+                        //-         #reviews
+                        //-             form(action="/bike-review", method="post") 
+                        //-                 h2 Leave a review
+                        //-                 input(type="number" name="rating")
+                        //-                 textarea(name="comment" cols="30" rows="5") 
+                        //-                 button(type="submit") Submit
+                                    
+                        //-                 #error
+                        //-                     h2
+
+                        //-             each review in bike_details.reviews
+                        //-                 .full-review
+                        //-                     .rating
+                        //-                         - for (var i = 1; i <= 5; ++i) {
+                        //-                             if review.rating >= i
+                        //-                                 i(class="fa fa-star checked")
+                        //-                             else
+                        //-                                 i(class="fa fa-star")
+                        //-                         - }
+
+                        //-                         span.rating-text
+                        //-                             | &nbsp;
+                        //-                             =review.rating
+                        //-                             | /5
+                                            
+                        //-                     .comment
+                        //-                         =review.comment
+
+                        //-                         span.author.notranslate
+                        //-                             | &nbsp;-&nbsp;
+                        //-                             =review.first_name
+                        //-                             | &nbsp;
+                        //-                             =review.surname[0]
+
+                        //-     .right
+
+                                    
+
+
+
+
+
+
