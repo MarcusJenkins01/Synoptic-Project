@@ -17,7 +17,7 @@ const port = 3000;
 
 // Contact details displayed on the web pages
 const phone_number = '+440123456789';
-const contact_email = 'contactus@lobike.com';
+const contact_email = 'contactus@peddleperu.com';
 
 // Our secret token for recaptcha
 const recaptcha_secret = '6LfYVS4bAAAAAKYYW4ULWua5inLYwjoBANmOZF-_';
